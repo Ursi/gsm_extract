@@ -5,6 +5,7 @@ const config = 'gsm_extract.json';
 (function gsmExtract(dir, extract = false) {
     console.log(dir);
     if (fs.existsSync(path.join(dir, config))) {
+        if (process.argv[2] != 'soft') fs.unlinkSync(path.join(dir, '.gitmodules'));
         try {
             var configObj = JSON.parse(fs.readFileSync(config));
         } catch (error) {
