@@ -33,4 +33,4 @@ const config = 'gsm_extract.json';
             }
         }
     }
-})(path.join(__dirname, '../..'));
+})(path.join(__dirname, '..'));
