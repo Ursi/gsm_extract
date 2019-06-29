@@ -2,14 +2,19 @@ const fs = require('fs');
 const path = require('path');
 const config = 'gsm_extract.json';
 
+function del(path) {
+    if (process.argv[2] != 'soft' && fs.existsSync(path)) fs.unlinkSync(path);
+}
+
 (function gsmExtract(dir, extract = false) {
     console.log(dir);
     if (fs.existsSync(path.join(dir, config))) {
         if (process.argv[2] != 'soft') fs.unlinkSync(path.join(dir, '.gitmodules'));
         try {
-            var configObj = JSON.parse(fs.readFileSync(config));
+            var configObj = JSON.parse(fs.readFileSync(path.join(dir, config)));
         } catch (error) {
-            console.error(`${config} not configured propery`)
+            console.error(`${config} not configured propery`);
+            process.exit();
         }
 
         for (let [msdir, modules] of Object.entries(configObj)) {
@@ -19,6 +24,9 @@ const config = 'gsm_extract.json';
                 }
             }
         }
+
+        del(path.join(dir, '.gitmodules'));
+        del(path.join(dir, config));
     }
 
     if (extract) {
