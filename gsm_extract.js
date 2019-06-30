@@ -8,7 +8,7 @@ const filterFiles = [
 ]
 
 function del(path) {
-    if (process.argv[2] != 'soft' && fs.existsSync(path)) fs.unlinkSync(path);
+    if (process.argv[2] == '-h' && fs.existsSync(path)) fs.unlinkSync(path);
 }
 
 (function gsmExtract(dir, extract = false) {
@@ -24,7 +24,10 @@ function del(path) {
         for (let [msdir, modules] of Object.entries(configObj)) {
             if (modules == 'all') {
                 for (let mdir of fs.readdirSync(path.join(dir, msdir))) {
-                    gsmExtract(path.join(dir, msdir, mdir), true);
+                    let mpath = path.join(dir, msdir, mdir);
+                    if (fs.statSync(mpath).isDirectory()) {
+                        gsmExtract(mpath, true);
+                    }
                 }
             }
         }
@@ -36,12 +39,12 @@ function del(path) {
     if (extract) {
         for (let file of fs.readdirSync(dir)) {
             if (!filterFiles.includes(file)) {
-                if (process.argv[2] == 'soft') {
-                    fs.copyFileSync(path.join(dir, file), path.join(dir, '..', file));
-                } else {
+                if (process.argv[2] == '-h') {
                     fs.renameSync(path.join(dir, file), path.join(dir, '..', file));
                     for (let file of filterFiles) del(path.join(dir, file));
                     fs.rmdir(dir, console.log);
+                } else {
+                    fs.copyFileSync(path.join(dir, file), path.join(dir, '..', file));
                 }
             }
         }
